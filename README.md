@@ -1,5 +1,12 @@
 # Electron Forge Template
 
+> **Note**
+> This is the `dotnet` branch of the template, which adds integration with an external .NET application.
+>
+> - [Add IPC to an external process](./BOILERPLATE.md#add-ipc-to-an-external-process)
+>
+> You could use this to, for example, access Windows-specific APIs that aren't available to Node.js.
+
 This is a boilerplate or template --
 i.e. it is placeholder sample source code, and development tooling --
 for an Electron application.
@@ -13,7 +20,7 @@ for an Electron application.
 
 To use this template to start your own application:
 
-- Read the "Hello world" source code in the `./src/*/` folders
+- Read the "Hello world" source code in the `./src/` and `./src.dotnet/` folders
 - Replace that, by writing your own source code for these folders
 - Use the scripts, which are defined in `package.json` and described here:
 
@@ -36,6 +43,7 @@ This boilerplate supports:
 - Electron
 - Written using TypeScript, and using React in the renderer
 - IPC in both directions, between the main process and the renderer, implemented using a preload script
+- IPC to an external .NET process, to support additional APIs using .NET instead of only Node.js
 
 The boilerplate includes "Hello world" source files to show how the IPC and React are implemented and used at run-time.
 
@@ -57,3 +65,4 @@ For details see also the user guides for these components:
 - [Electron](https://www.electronjs.org/docs/latest/)
 - [Electron Forge](https://www.electronforge.io/)
 - [React](https://reactjs.org/docs/getting-started.html)
+- [Electron CGI](https://github.com/ruidfigueiredo/electron-cgi#readme)

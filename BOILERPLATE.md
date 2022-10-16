@@ -12,8 +12,12 @@ This is a step-by-step review of how I created this template, so that you unders
   - [Reference these new source folders as the entry-points in `package.json`](#reference-these-new-source-folders-as-the-entry-points-in-packagejson)
   - [Insert `createApplication` into the `src/index.ts` boilerplate](#insert-createapplication-into-the-srcindexts-boilerplate)
   - [Implement Inter-Process Communication (IPC)](#implement-inter-process-communication-ipc)
-  - [Do not implement Node.js integration in the renderer process](#do-not-implement-nodejs-integration-in-the-renderer-process)
   - [Summary](#summary)
+- [Add IPC to an external process](#add-ipc-to-an-external-process)
+  - [Use `electron-cgi` to implement the IPC](#use-electron-cgi-to-implement-the-ipc)
+  - [Define the external process](#define-the-external-process)
+  - [Use `electron-forge-resource-plugin` to integrate it](#use-electron-forge-resource-plugin-to-integrate-it)
+  - [Invoke the external process from the main application](#invoke-the-external-process-from-the-main-application)
 
 ## Use Electron Forge to create the boilerplate and configure webpack
 
@@ -205,46 +209,6 @@ To do this:
 
 Now you can use these APIs in your application-specific main and renderer code.
 
-### Do not implement Node.js integration in the renderer process
-
-The `renderer.ts` boilerplate created by the Electron Forge template included this comment:
-
-> This file will automatically be loaded by webpack and run in the "renderer" context.
-> To learn more about the differences between the "main" and the "renderer" context in
-> Electron, visit:
->
-> https://electronjs.org/docs/latest/tutorial/process-model
->
-> By default, Node.js integration in this file is disabled. When enabling Node.js integration
-> in a renderer process, please be aware of potential security implications. You can read
-> more about security risks here:
->
-> https://electronjs.org/docs/tutorial/security
->
-> To enable Node.js integration in this file, open up `main.js` and enable the `nodeIntegration`
-> flag:
->
-> ```ts
-> // Create the browser window.
-> mainWindow = new BrowserWindow({
->   width: 800,
->   height: 600,
->   webPreferences: {
->     nodeIntegration: true,
->   },
-> });
-> ```
-
-You can do that -- in which case you may not need the two sections above i.e.:
-
-- Application-specific code in the main process
-- IPC between the main process and the renderer
-
-This template does not do so:
-
-- For security -- which may not concern you if you only load local, trusted code into the renderer
-- For architectural separation-of-concerns -- to make explicit the API between the UI and the "backend"
-
 ### Summary
 
 Now the `src` folder is clean:
@@ -252,3 +216,112 @@ Now the `src` folder is clean:
 - The `src` folder contains only `index.ts` plus the new subfolders listed above.
 - The `index.ts` is the original boilerplate with one extra `createApplication` function call inserted
 - The entry-points in the `preload` and `renderer` folders are defined in the `entryPoints` section of `package.json`
+
+## Add IPC to an external process
+
+You can also implement IPC between the main process and an external process.
+
+For example I want to use some Windows Shell APIs (some of which are COM interfaces):
+
+- I cannot easily call these from the main process, which is implemented using Node.js and Electron APIs
+- I could call these from an external process, if it were implemented using .NET or the native Windows APIs
+- And so I create a .NET process, and an IPC API which lets the main process use it like a run-time library
+
+### Use `electron-cgi` to implement the IPC
+
+You could implement the IPC any way you like, perhaps using REST for example.
+
+I chose to do it using the Electron CGI package:
+
+- NPM: https://www.npmjs.com/package/electron-cgi
+- GitHub: https://github.com/ruidfigueiredo/electron-cgi
+
+### Define the external process
+
+The external .NET process is not built by Electron Forge's Webpack plugin,
+so I define it in a new directory -- in `./src.dotnet` i.e. anywhere other than in the `src` directory:
+
+- `src.dotnet/.gitignore`
+- `src.dotnet/Core.csproj`
+- `src.dotnet/Core.sln`
+- `src.dotnet/Program.cs`
+
+The application references the NuGet `ElectronCgi.DotNet` package:
+
+- NuGet: https://www.nuget.org/packages/ElectronCgi.DotNet/
+
+The example source code is copied from the README of that package:
+
+- [`src.dotnet/Program.cs`](./src.dotnet/Program.cs)
+
+The `dotnet` commands to create the initial application are:
+
+```
+dotnet new console --name Core
+dotnet add package ElectronCgi.DotNet
+```
+
+I keep the normal, default build options: so it builds into `obj` and `bin` subdirectories,
+for which I create `.gitignore`.
+
+### Use `electron-forge-resource-plugin` to integrate it
+
+To integrate the external application I want to:
+
+- Build it, and rebuild it when its source code changes
+- Include it in the package when the application is packaged
+- Reference its path from within the main application
+
+To do this I use the `electron-forge-resource-plugin` package:
+
+- NPM: https://www.npmjs.com/package/electron-forge-resource-plugin
+- GitHub: https://github.com/cwellsx/electron-forge-resource-plugin
+
+So:
+
+- Add this to the project as a development-time dependency:
+
+  ```
+  npm install -D electron-forge-resource-plugin
+  ```
+
+- Configure it as described in its README, i.e.:
+  - [Configure it in `package.json`](https://github.com/cwellsx/electron-forge-resource-plugin#configure-it-in-packagejson)
+  - [Add the environment variable to `webpack.main.config.js`](https://github.com/cwellsx/electron-forge-resource-plugin#add-the-environment-variable-to-webpackmainconfigjs)
+  - [Use the environment variable in your application](https://github.com/cwellsx/electron-forge-resource-plugin#use-the-environment-variable-in-your-application)
+
+### Invoke the external process from the main application
+
+There are just a few changes needed to use the new IPC from the main application:
+
+1. Declare `electron-cgi` as a runtime dependency:
+
+   - `npm install electron-cgi`
+
+2. Create a new module to encapsulate the new API:
+
+   - [`./src/main/createDotNetApi.ts`](./src/main/createDotNetApi.ts)
+
+3. Invoke or instantiate the new module from the application,
+   using `CORE_EXE` environment variable defined by the the `electron-forge-resource-plugin` configuration:
+
+   ```ts
+   declare const CORE_EXE: string;
+   log(`CORE_EXE is ${CORE_EXE}`);
+
+   export function createApplication(webContents: WebContents): void {
+     // instantiate the DotNetApi
+     const dotNetApi: DotNetApi = createDotNetApi(CORE_EXE);
+   ```
+
+4. Use the new API, for example:
+
+   ```ts
+   function onRendererLoaded(): void {
+     log("getGreeting");
+     dotNetApi.getGreeting("World").then((greeting: string) => {
+       log(greeting);
+       rendererApi.setGreeting(`${greeting}!`);
+     });
+   }
+   ```

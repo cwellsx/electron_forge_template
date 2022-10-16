@@ -19,7 +19,9 @@
   "license": "MIT",
   "config": {
     "forge": {
-      "packagerConfig": {},
+      "packagerConfig": {
+        "extraResource": "./LICENSE"
+      },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
@@ -44,6 +46,21 @@
       ],
       "plugins": [
         [
+          "electron-forge-resource-plugin",
+          {
+            "env": "CORE_EXE",
+            "path": "./src.dotnet/bin/Release/net5.0/Core.exe",
+            "build": {
+              "command": "dotnet.exe build ./src.dotnet/Core.csproj --verbosity normal --configuration Release",
+              "sources": "./src.dotnet/"
+            },
+            "package": {
+              "dirname": "core"
+            },
+            "verbose": true
+          }
+        ],
+        [
           "@electron-forge/plugin-webpack",
           {
             "mainConfig": "./webpack.main.config.js",
@@ -66,12 +83,12 @@
     }
   },
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.65",
-    "@electron-forge/maker-deb": "^6.0.0-beta.65",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.65",
-    "@electron-forge/maker-squirrel": "^6.0.0-beta.65",
-    "@electron-forge/maker-zip": "^6.0.0-beta.65",
-    "@electron-forge/plugin-webpack": "6.0.0-beta.65",
+    "@electron-forge/cli": "^6.0.0-beta.67",
+    "@electron-forge/maker-deb": "^6.0.0-beta.67",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.67",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.67",
+    "@electron-forge/maker-zip": "^6.0.0-beta.67",
+    "@electron-forge/plugin-webpack": "^6.0.0-beta.67",
     "@types/react": "^18.0.18",
     "@types/react-dom": "^18.0.6",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
@@ -79,6 +96,7 @@
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
     "css-loader": "^6.0.0",
     "electron": "20.1.1",
+    "electron-forge-resource-plugin": "^0.1.1",
     "eslint": "^8.0.1",
     "eslint-plugin-import": "^2.25.0",
     "eslint-plugin-react-hooks": "^4.6.0",
@@ -89,6 +107,7 @@
     "typescript": "~4.5.4"
   },
   "dependencies": {
+    "electron-cgi": "^1.0.6",
     "electron-squirrel-startup": "^1.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"

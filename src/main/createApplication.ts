@@ -1,11 +1,16 @@
 import { BrowserWindow, ipcMain, IpcMainEvent, WebContents } from 'electron';
 
+import { createDotNetApi, DotNetApi } from './createDotNetApi';
 import { log } from './log';
 
 import type { MainApi, RendererApi } from "../shared-types";
 
+declare const CORE_EXE: string;
+log(`CORE_EXE is ${CORE_EXE}`);
+
 export function createApplication(webContents: WebContents): void {
-  log("createApplication");
+  // instantiate the DotNetApi
+  const dotNetApi: DotNetApi = createDotNetApi(CORE_EXE);
 
   // implement RendererApi using webContents.send
   const rendererApi: RendererApi = {
@@ -16,7 +21,6 @@ export function createApplication(webContents: WebContents): void {
 
   // this is a light-weight class which implements the MainApi by binding it to BrowserWindow instance at run-time
   // a new instance of this class is created for each event
-  // or this API could be a singleton const object if we ignored event.sender e.g. if there is only one renderer window
   class MainApiImpl implements MainApi {
     window: BrowserWindow;
     constructor(window: BrowserWindow) {
@@ -24,7 +28,6 @@ export function createApplication(webContents: WebContents): void {
     }
 
     setTitle(title: string): void {
-      log("setTitle");
       this.window.setTitle(title);
     }
   }
@@ -42,8 +45,11 @@ export function createApplication(webContents: WebContents): void {
   bindIpcMain();
 
   function onRendererLoaded(): void {
-    log("setGreeting");
-    rendererApi.setGreeting("Hello World via IPC!");
+    log("getGreeting");
+    dotNetApi.getGreeting("World").then((greeting: string) => {
+      log(greeting);
+      rendererApi.setGreeting(`${greeting}!`);
+    });
   }
 
   webContents.once("did-finish-load", onRendererLoaded);
