@@ -1,6 +1,9 @@
 import { BrowserWindow, ipcMain, IpcMainEvent, WebContents } from 'electron';
+import fs from 'fs';
+import path from 'path';
 
 import { createDotNetApi, DotNetApi } from './createDotNetApi';
+import { createSqlDatabase, SqlApi } from './createSqlDatabase';
 import { log } from './log';
 
 import type { MainApi, RendererApi } from "../shared-types";
@@ -11,6 +14,14 @@ log(`CORE_EXE is ${CORE_EXE}`);
 export function createApplication(webContents: WebContents): void {
   // instantiate the DotNetApi
   const dotNetApi: DotNetApi = createDotNetApi(CORE_EXE);
+
+  // instantiate the SqlApi
+  const getDbName = (): string => {
+    const dir = path.join(process.env.APPDATA, "pic");
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+    return path.join(dir, "pic.db");
+  };
+  const sqlApi: SqlApi = createSqlDatabase(getDbName());
 
   // implement RendererApi using webContents.send
   const rendererApi: RendererApi = {
@@ -48,7 +59,9 @@ export function createApplication(webContents: WebContents): void {
     log("getGreeting");
     dotNetApi.getGreeting("World").then((greeting: string) => {
       log(greeting);
-      rendererApi.setGreeting(`${greeting}!`);
+      const names = sqlApi.selectNames().join(", ");
+      log(names);
+      rendererApi.setGreeting(`${greeting} from ${names}!`);
     });
   }
 
