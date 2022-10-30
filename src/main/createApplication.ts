@@ -18,14 +18,14 @@ export function createApplication(webContents: WebContents): void {
   // a new instance of this class is created for each event
   // or this API could be a singleton const object if we ignored event.sender e.g. if there is only one renderer window
   class MainApiImpl implements MainApi {
-    window: BrowserWindow;
-    constructor(window: BrowserWindow) {
+    window: BrowserWindow | null;
+    constructor(window: BrowserWindow | null) {
       this.window = window;
     }
 
     setTitle(title: string): void {
       log("setTitle");
-      this.window.setTitle(title);
+      this.window?.setTitle(title);
     }
   }
 
