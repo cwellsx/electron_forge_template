@@ -1,7 +1,12 @@
 import './index.css';
 
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import { createApp } from './App';
 
-ReactDOM.render(createApp(), document.getElementById("renderer"));
+const container = document.getElementById("renderer");
+
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const root = createRoot(container!);
+
+root.render(createApp());
