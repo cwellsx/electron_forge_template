@@ -1,11 +1,8 @@
 # Electron Forge Template
 
 > **Note**
-> This is the `dotnet` branch of the template, which adds integration with an external .NET application.
->
-> - [Add IPC to an external process](./BOILERPLATE.md#add-ipc-to-an-external-process)
->
-> You could use this to, for example, access Windows-specific APIs that aren't available to Node.js.
+> This template has several branches with different features
+> (see [Branches](./BRANCHES.md) for details).
 
 This is a boilerplate or template --
 i.e. it is placeholder sample source code, and development tooling --
