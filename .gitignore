@@ -87,3 +87,6 @@ typings/
 
 # Electron-Forge
 out/
+
+# Source code for the dotnet branch
+src.dotnet/

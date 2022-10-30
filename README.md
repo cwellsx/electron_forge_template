@@ -1,8 +1,8 @@
 # Electron Forge Template
 
 > **Note**
-> Alternatively see the [`dotnet` branch](https://github.com/cwellsx/electron_forge_template/tree/dotnet)
-> of this template, which adds integration with an external application.
+> This template has several branches with different features
+> (see [Branches](./BRANCHES.md) for details).
 
 This is a boilerplate or template --
 i.e. it is placeholder sample source code, and development tooling --
