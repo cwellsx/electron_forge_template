@@ -4,6 +4,15 @@
 > and therefore its `version` is NOT changed when any updates are made to this template.
 > Instead, updates to this template are shown only in this CHANGELOG (and in the Git history).
 
+### 2022-10-30
+
+- Add the `strict` Typescript option
+- Upgrade to the React 18 API
+
+### 2022-10-29
+
+- Create the [`sqlite` branch](https://github.com/cwellsx/electron_forge_template/tree/sqlite)
+
 ### 2022-10-21
 
 - Begin to use SQLite -- use the `fix_electron20_build` branch of a fork of `better-sqlite3`

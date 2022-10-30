@@ -33,13 +33,14 @@ export function createApplication(webContents: WebContents): void {
   // this is a light-weight class which implements the MainApi by binding it to BrowserWindow instance at run-time
   // a new instance of this class is created for each event
   class MainApiImpl implements MainApi {
-    window: BrowserWindow;
-    constructor(window: BrowserWindow) {
+    window: BrowserWindow | null;
+    constructor(window: BrowserWindow | null) {
       this.window = window;
     }
 
     setTitle(title: string): void {
-      this.window.setTitle(title);
+      log("setTitle");
+      this.window?.setTitle(title);
     }
   }
 
