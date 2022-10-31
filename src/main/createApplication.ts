@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain, IpcMainEvent, WebContents } from 'electron';
+import { app, BrowserWindow, ipcMain, IpcMainEvent, WebContents } from 'electron';
 import fs from 'fs';
 import path from 'path';
 
@@ -17,7 +17,9 @@ export function createApplication(webContents: WebContents): void {
 
   // instantiate the SqlApi
   const getDbName = (): string => {
-    const dir = path.join(process.env.APPDATA, "pic");
+    // beware https://www.electronjs.org/docs/latest/api/app#appgetpathname
+    // says that, "it is not recommended to write large files here"
+    const dir = app.getPath("userData");
     if (!fs.existsSync(dir)) fs.mkdirSync(dir);
     return path.join(dir, "pic.db");
   };
