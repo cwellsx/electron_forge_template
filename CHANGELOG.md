@@ -4,6 +4,10 @@
 > and therefore its `version` is NOT changed when any updates are made to this template.
 > Instead, updates to this template are shown only in this CHANGELOG (and in the Git history).
 
+### 2022-11-08
+
+- Update to the release version 6.0.0 of Electron Forge
+
 ### 2022-11-02
 
 - Create the [`sass` branch](https://github.com/cwellsx/electron_forge_template/tree/sass)
