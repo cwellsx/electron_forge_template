@@ -41,6 +41,7 @@ This boilerplate supports:
 - Written using TypeScript, and using React in the renderer
 - IPC in both directions, between the main process and the renderer, implemented using a preload script
 - IPC to an external .NET process, to support additional APIs using .NET instead of only Node.js
+- SQLite integrated into the main Electron process
 
 The boilerplate includes "Hello world" source files to show how the IPC and React are implemented and used at run-time.
 
@@ -63,3 +64,4 @@ For details see also the user guides for these components:
 - [Electron Forge](https://www.electronforge.io/)
 - [React](https://reactjs.org/docs/getting-started.html)
 - [Electron CGI](https://github.com/ruidfigueiredo/electron-cgi#readme)
+- [SQLite](https://github.com/WiseLibs/better-sqlite3/#documentation)

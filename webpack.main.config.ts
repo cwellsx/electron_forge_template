@@ -1,6 +1,8 @@
-const webpack = require("webpack");
+import { rules } from './webpack.rules';
 
-module.exports = {
+import type { Configuration } from "webpack";
+
+export const mainConfig: Configuration = {
   /**
    * This is the main entry point for your application, it's the first file
    * that runs in the main process.
@@ -8,13 +10,8 @@ module.exports = {
   entry: "./src/index.ts",
   // Put your normal webpack config below here
   module: {
-    rules: require("./webpack.rules"),
+    rules,
   },
-  plugins: [
-    new webpack.DefinePlugin({
-      CORE_EXE: JSON.stringify(process.env.CORE_EXE),
-    }),
-  ],
   resolve: {
     extensions: [".js", ".ts", ".jsx", ".tsx", ".css", ".json"],
   },

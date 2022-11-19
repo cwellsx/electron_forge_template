@@ -18,6 +18,10 @@ This is a step-by-step review of how I created this template, so that you unders
   - [Define the external process](#define-the-external-process)
   - [Use `electron-forge-resource-plugin` to integrate it](#use-electron-forge-resource-plugin-to-integrate-it)
   - [Invoke the external process from the main application](#invoke-the-external-process-from-the-main-application)
+- [Integrate SQLite](#integrate-sqlite)
+  - [Add a reference to `better-sqlite3`](#add-a-reference-to-better-sqlite3)
+  - [Install support for building native modules](#install-support-for-building-native-modules)
+  - [Use the API in the main process](#use-the-api-in-the-main-process)
 
 ## Use Electron Forge to create the boilerplate and configure webpack
 
@@ -286,9 +290,8 @@ So:
   ```
 
 - Configure it as described in its README, i.e.:
-  - [Configure it in `package.json`](https://github.com/cwellsx/electron-forge-resource-plugin#configure-it-in-packagejson)
-  - [Add the environment variable to `webpack.main.config.js`](https://github.com/cwellsx/electron-forge-resource-plugin#add-the-environment-variable-to-webpackmainconfigjs)
-  - [Use the environment variable in your application](https://github.com/cwellsx/electron-forge-resource-plugin#use-the-environment-variable-in-your-application)
+  - [Configure it in `forge.config.ts`](https://github.com/cwellsx/electron-forge-resource-plugin#configure-it-in-forgeconfigts)
+  - [Use the path in your application](https://github.com/cwellsx/electron-forge-resource-plugin#use-the-path-in-your-application)
 
 ### Invoke the external process from the main application
 
@@ -325,3 +328,63 @@ There are just a few changes needed to use the new IPC from the main application
      });
    }
    ```
+
+## Integrate SQLite
+
+I integrate SQLite as follows.
+
+### Add a reference to `better-sqlite3`
+
+There are various Node packages which provide integration with SQLite.
+Of these I chose to use [the `better-sqlite3` package](https://www.npmjs.com/package/better-sqlite3).
+
+This package doesn't currently support the recent version of Electron.
+There's a pull request to support it, but at the time of writing this PR has not yet been completed:
+
+- https://github.com/WiseLibs/better-sqlite3/issues/867#issuecomment-1277766794
+- https://github.com/WiseLibs/better-sqlite3/pull/870
+- https://github.com/neoxpert/better-sqlite3/tree/fix_electron20_build
+
+So I install the specific branch which includes the pull request:
+
+```
+npm install WiseLibs/better-sqlite3#pull/870/head
+```
+
+The dependencies in `package.json` currently look like this:
+
+```json
+  "dependencies": {
+    "better-sqlite3": "github:WiseLibs/better-sqlite3#pull/870/head",
+    "electron-cgi": "^1.0.6",
+    "electron-squirrel-startup": "^1.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+```
+
+### Install support for building native modules
+
+Even if native code is pre-built, for distribution in a Node package like `better-sqlite3`,
+it must be rebuilt if it's integrated into Electron.
+
+The configuration files to do the build already exist in the package,
+but you need the build tools installed on your development machine.
+
+I already had the Community Edition of Visual Studio 2019 installed on my machine.
+To ensure that's integrated with the Node environment:
+
+- Download and install the latest version of [the Windows Installer for Node](https://nodejs.org/en/download/)
+- Enable the "Windows build tools" option before installing
+
+### Use the API in the main process
+
+I added a new module to the main process:
+
+- [`./src/main/createSqlDatabase.ts`](./src/main/createSqlDatabase.ts)
+
+This declares and implements an API which can be called from the main application.
+
+Some people try to integrate SQLite into the renderer process.
+I haven't tried to -- because I'm not sure it's easy, and I don't think it's necessary, given that there's IPC
+between the main application and the renderer process.
