@@ -286,9 +286,8 @@ So:
   ```
 
 - Configure it as described in its README, i.e.:
-  - [Configure it in `package.json`](https://github.com/cwellsx/electron-forge-resource-plugin#configure-it-in-packagejson)
-  - [Add the environment variable to `webpack.main.config.js`](https://github.com/cwellsx/electron-forge-resource-plugin#add-the-environment-variable-to-webpackmainconfigjs)
-  - [Use the environment variable in your application](https://github.com/cwellsx/electron-forge-resource-plugin#use-the-environment-variable-in-your-application)
+  - [Configure it in `forge.config.ts`](https://github.com/cwellsx/electron-forge-resource-plugin#configure-it-in-forgeconfigts)
+  - [Use the path in your application](https://github.com/cwellsx/electron-forge-resource-plugin#use-the-path-in-your-application)
 
 ### Invoke the external process from the main application
 

@@ -24,3 +24,8 @@ You could use this to, for example, access Windows-specific APIs that aren't ava
 
 This was branched from `dotnet`.
 It adds integration with the `better-sqlite3` package.
+
+## [`sass` branch](https://github.com/cwellsx/electron_forge_template/tree/sass)
+
+This was branched from `main`.
+It adds supports for SASS (instead of only CSS) with the `node-sass` and `sass-loader` packages.
