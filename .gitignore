@@ -87,6 +87,8 @@ typings/
 
 # Electron-Forge
 out/
+dist/
 
 # Source code for the dotnet branch
 src.dotnet/
+.vscode/
