@@ -4,6 +4,10 @@
 > and therefore its `version` is NOT changed when any updates are made to this template.
 > Instead, updates to this template are shown only in this CHANGELOG (and in the Git history).
 
+### 2023-12-22
+
+- Update to the release version 7.2.0 of Electron Forge
+
 ### 2023-03-11
 
 - Add [FORKING.md](./FORKING.md)
