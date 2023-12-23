@@ -130,7 +130,7 @@ Edit the `entryPoints` in `package.json` as follows, to say that the entry-point
 
 ### Insert `createApplication` into the `src/index.ts` boilerplate
 
-You may wrote application-specific code to run within the main process.
+You may write application-specific code to run within the main process.
 To implement this:
 
 - Write and export a `createApplication` function in the new `src/main` folder
