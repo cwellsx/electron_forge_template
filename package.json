@@ -32,7 +32,7 @@
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
     "css-loader": "^6.0.0",
     "electron": "28.1.0",
-    "electron-forge-resource-plugin": "^1.0.0-alpha.7",
+    "electron-forge-resource-plugin": "^1.0.0-alpha.8",
     "eslint": "^8.0.1",
     "eslint-plugin-import": "^2.25.0",
     "eslint-plugin-react-hooks": "^4.6.0",
