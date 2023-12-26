@@ -1,4 +1,4 @@
-import sqlite from 'better-sqlite3';
+import sqlite from "better-sqlite3";
 
 // https://github.com/electron-userland/electron-forge/issues/1224#issuecomment-606649565
 // https://www.npmjs.com/package/better-sqlite3
@@ -39,6 +39,6 @@ export function createSqlDatabase(filename: string): SqlApi {
 
   const selectAllNames = db.prepare(`SELECT (name) FROM ${tableName}`);
   return {
-    selectNames: () => selectAllNames.all().map((obj) => obj.name),
+    selectNames: () => selectAllNames.all().map((obj) => (obj as { name: string }).name),
   };
 }
